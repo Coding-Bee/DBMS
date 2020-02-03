@@ -1,0 +1,54 @@
+1 create a team till coach name 
+create table Team
+(
+Team_id int,
+Team_name varchar(10),
+city varchar(10),
+coach_name varchar(10),
+primary key(Team_id)
+)
+
+
+2.  create table players with all atributtes 
+create table players
+(
+P_id int,
+p_name varchar(10),
+Positon varchar(10),
+skill_level varchar(10),
+Dob date,
+Team_id int,
+primary key(P_id),
+foreign key(Team_id) references team(Team_id)
+);
+
+3 create table injury
+create table Injury
+(
+Injury_name varchar(10),
+P_id int,
+I_date date,
+Physician varchar(10),
+Type varchar(10),
+primary key(Injury_name,P_id),
+foreign key(P_id) references players(P_id)
+);
+
+4 create table games
+create table games
+(
+Tid1 int,
+Tid2 int,
+Score int,
+Guest int,
+G_date date,
+Venue varchar(10),
+primary key(Tid1,Tid2,Guest),
+foreign key(Tid1) references team(Team_id),
+foreign key(Tid2) references team(Team_id),
+foreign key(Guest) references team(Team_id)
+);
+
+5 insert values in team table;
+insert into Team values(&Team_id,'Team_name','&city','&coach_name')
+
