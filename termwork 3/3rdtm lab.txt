@@ -1,0 +1,192 @@
+#Termwork 03
+
+CREATE  TABLE   FLIGHTS
+ (no  integer,
+ fromPlace  varchar(20),
+ toPlace  varchar(20),
+ distance  integer,
+ departs   date,
+ arrives  date,
+ price  real,
+ PRIMARY   KEY(no));
+
+CREATE  TABLE    AIRCRAFT
+ (aid  integer,
+  aname  varchar(15),
+  cruisingrange  integer,
+  PRIMARY   KEY (aid));
+
+ CREATE  TABLE   EMPLOYEES
+ (eid  integer,
+  ename  varchar(15),
+  salary  integer,
+  PRIMARY   KEY (eid));
+
+CREATE  TABLE    CERTIFIED
+ (eid  integer,
+  aid  integer,
+  PRIMARY   KEY (eid, aid),
+  FOREIGN   KEY (eid) references  EMPLOYEES (eid),
+  FOREIGN   KEY (aid) references AIRCRAFT (aid));
+
+insert 
+FLIGHTS(no: integer, fromPlace: string, toPlace: string, distance: integer, Departs: date, arrives: date, price: real)
+AIRCRAFT(aid: integer, aname: string, cruisingrange: integer)
+CERTIFIED(eid: integer, aid: integer)
+EMPLOYEES(eid: integer, ename: string, salary: integer)
+
+SQL> SELECT   *   FROM   AIRCRAFT;
+ 
+       AID 		ANAME           GRANGE
+--------------------------- -------------------------------------
+       685 	boeing15                 1000
+       686 	boeing10                 2000
+       687 	skytrain                    1000
+       688 	avenger                    100
+
+Insert into AIRCRAFT  values(685,'boeing15',1000);
+Insert into AIRCRAFT values(686,'boeing10',2000);
+Insert into AIRCRAFT values(687,'skytrain',1000);
+Insert into AIRCRAFT values(688,'avenger',100);
+
+
+
+SQL> SELECT   *   FROM   EMPLOYEES;
+ 
+       EID 		ENAME               SALARY
+------------------------- ---------------------------
+       101 		asha                      90000
+       102 		arun                      85000
+       103 		anand                   3000
+     104 		ramya                   4000
+
+Insert into EMPLOYEES  values(  101 ,'asha',90000);
+Insert into EMPLOYEES values(102 ,'arun', 85000);
+Insert into EMPLOYEES values(103 ,'anand',3000);
+Insert into EMPLOYEES values( 104,'ramya',4000);  
+
+
+SQL)SELECT   *   FROM   FLIGHTS;
+    NO         FROMPLACE            TOPLACE                DISTANCE            DEPARTS       ARRIVES           PRICE
+------ -------------------- -------------------- ---------- --------- --------- ------------------------------------------------------
+   255           bangalore               frankfurt                    200                  01-AUG-11        01-AUG-11       5000
+   256           bangalore               frankfurt                    200                   01-AUG-11       01-AUG-11       8000
+   257           bangalore               delhi                           200                   01-AUG-11       01-AUG-11       5000
+   258           bangalore               delhi                           200                   01-AUG-11       01-AUG-11       6000
+   259           bangalore               mangalore                 200                   01-AUG-11       01-AUG-11       8000
+
+
+Insert into FLIGHTS values( 255, 'bangalore', 'frankfurt' , 200 , '01-AUG-11 ','01-AUG-11', 5000);
+Insert into FLIGHTS values( 256, 'bangalore', 'frankfurt' , 200 , '01-AUG-11 ','01-AUG-11', 8000);
+Insert into FLIGHTS values(257 ,'bangalore','delhi',200,'01-AUG-11','01-AUG-11',5000);
+Insert into FLIGHTS values(257 ,'bangalore','delhi',200,'01-AUG-11','01-AUG-11',5000);
+Insert into FLIGHTS values(259 ,'banglore','manglore',200,'01-AUG-11','01-AUG-11',8000);
+
+SQL)SELECT   *   FROM   CERTIFIED;
+
+Insert into CERTIFIED values( 101,685);
+Insert into CERTIFIED values( 101,686);
+Insert into CERTIFIED values( 101,687);
+Insert into CERTIFIED values( 101,688);
+Insert into CERTIFIED values( 102,685);
+Insert into CERTIFIED values( 103,686);
+Insert into CERTIFIED values( 103,687);
+  
+
+query
+1) find the names of aircraft such that all pilots certified to operate them  have salaries more then 80000
+
+select distinct a.aname
+from aircraft a,certified c,employees e
+where a.aid=c.aid and e.eid=c.eid and e.salary>80000;
+
+
+SQL> select distinct a.aname
+  2  from aircraft a,certified c,employees e
+  3  where a.aid=c.aid and e.eid=c.eid and e.salary>80000;
+
+ANAME
+---------------
+avenger
+boeing10
+boeing15
+skytrain
+
+2)For each pilot who is certified for more than three aircrafts,find the eid and the
+maximum range of the aircraft f0r which she or he is certified
+
+Select c.eid,Max(a.cruisingrange)
+from  aircraft a,certified c
+where c.aid=a.aid 
+group by c.eid
+having count(*)>3;
+
+
+SQL> Select c.eid,Max(a.cruisingrange)
+  2  from  aircraft a,certified c
+  3  where c.aid=a.aid
+  4  group by c.eid
+  5  having count(*)>3;
+
+       EID MAX(A.CRUISINGRANGE)
+---------- --------------------
+       101                 2000
+
+
+
+
+3)find the name of the pilots whose salary is less then price of the cheapest 
+route from the banglore to frankfurt.
+Select distinct e.ename 
+From employees e, certified c
+where e.eid=c.eid and e.salary<
+(select Min(price)
+from flights where fromplace='bangalore' and toPlace='frankfurt');
+
+ENAME
+---------------
+anand
+
+
+
+SQL> Select distinct e.ename
+  2  From employees e, certified c
+  3  where e.eid=c.eid and e.salary<
+  4  (select Min(price)
+  5  from flights where fromplace='bangalore' and toPlace='frankfurt');
+
+ENAME
+---------------
+anand
+
+4)find the aids of all aircraft that can be used on routes from bengaluru to new
+delhi 
+select a.aid
+from aircraft a
+where a.cruisingrange > (select Min(distance)
+from flights 
+where fromPlace='bangalore' and toPlace='delhi');
+
+       AID
+----------
+       685
+       686
+       687
+
+
+SQL> select a.aid
+  2  from aircraft a
+  3  where a.cruisingrange > (select Min(distance)
+  4  from flights
+  5  where fromPlace='bangalore' and toPlace='delhi');
+
+       AID
+----------
+       685
+       686
+       687
+
+
+
+
+
